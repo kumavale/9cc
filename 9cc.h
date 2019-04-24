@@ -34,6 +34,12 @@ typedef struct {
     char *input;  // トークン文字列 (エラーメッセージ用)
 } Token;
 
+// マップの連想配列
+typedef struct {
+    Vector *keys;
+    Vector *vals;
+} Map;
+
 
 // プロトタイプ宣言
 Node *add();
