@@ -3,12 +3,14 @@
 enum {
     TK_NUM = 256,  // 整数トークン
     TK_IDENT,      // 識別子
+    TK_RETURN,     // return
     TK_EOF,        // 入力の終わりを表すトークン
 };
 
 enum {
     ND_NUM = 256,  // 整数のノードの型:
     ND_IDENT,      // 識別子のノードの型
+    ND_RETURN,     // returnのノードの型
 };
 
 typedef struct {

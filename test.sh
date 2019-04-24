@@ -27,5 +27,7 @@ try 2 "1+2*(3-4);(4+2)/3;"
 try 3 "a=1; a+a+a;"
 try 6 "a=1; b=2; c=3; a*b*c;"
 try 14 "a=3; b=5*6-8; a+b/2;"
+try 0 "return 0;"
+try 42 "r=42; return r;"
 
 echo OK
