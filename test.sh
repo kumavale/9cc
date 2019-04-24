@@ -32,5 +32,7 @@ try 42 "r=42; return r;"
 try 4 "a=b=2; a*b;"
 try 6 "foo = 1; bar = 2 + 3; return foo + bar;"
 try 13 "hoge=5; fuga=hoge*2; fuga+3;"
+try 6 "i=-5; k=j=-(2+i); j+k;"
+#try -15 "-3*+5;" #failured
 
 echo OK

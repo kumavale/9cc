@@ -178,8 +178,16 @@ Node *term() {
             tokens[pos].input);
 }
 
+Node *unary() {
+    if(consume('+'))
+        return term();
+    if(consume('-'))
+        return new_node('-', new_node_num(0), term());
+    return term();
+}
+
 Node *mul() {
-    Node *node = term();
+    Node *node = unary();
 
     for(;;) {
         if(consume('*'))
