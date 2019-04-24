@@ -29,5 +29,8 @@ try 6 "a=1; b=2; c=3; a*b*c;"
 try 14 "a=3; b=5*6-8; a+b/2;"
 try 0 "return 0;"
 try 42 "r=42; return r;"
+try 4 "a=b=2; a*b;"
+try 6 "foo = 1; bar = 2 + 3; return foo + bar;"
+try 13 "hoge=5; fuga=hoge*2; fuga+3;"
 
 echo OK

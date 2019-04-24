@@ -144,11 +144,11 @@ Node *new_node_num(int val) {
     return node;
 }
 
-Node *new_node_ident(int val) {
+Node *new_node_ident(char *name) {
     //fprintf(stderr, "__LINE__: %d, val: %d\n", __LINE__, val);
     Node *node = malloc(sizeof(Node));
     node->ty = ND_IDENT;
-    node->name = val;
+    node->name = *name;
     return node;
 }
 
@@ -164,7 +164,7 @@ Node *term() {
         return new_node_num(tokens[pos++].val);
 
     if(tokens[pos].ty == TK_IDENT)
-        return new_node_ident(tokens[pos++].val);
+        return new_node_ident(tokens[pos++].name);
 
     if(consume('(')) {
         Node *node = add();
@@ -303,11 +303,15 @@ void tokenize(char *p) {
         }
 
         if('a' <= *p && *p <= 'z') {
+            int j=1;
+            while(is_alnum(*(p+j))) {
+                j++;
+            }
             tokens[i].ty = TK_IDENT;
             tokens[i].input = p;
-            tokens[i].val = *p;
+            tokens[i].name = strndup(p, j);
             i++;
-            p++;
+            p+=j;
             continue;
         }
 

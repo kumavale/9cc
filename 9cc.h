@@ -31,6 +31,7 @@ typedef struct {
 typedef struct {
     int ty;       // トークンの型
     int val;      // tyがTK_NUMの場合, その数値
+    char *name;   // tyがTK_IDENTの場合, その名前
     char *input;  // トークン文字列 (エラーメッセージ用)
 } Token;
 
