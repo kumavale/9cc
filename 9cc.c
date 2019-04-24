@@ -24,12 +24,12 @@ void runtest() {
     expect(__LINE__, 0, vec->len);
 
     for(int i=0; i<100; i++)
-        vec_push(vec, (void *)i);
+        vec_push(vec, (void *)(int64_t)i);
 
     expect(__LINE__, 100, vec->len);
-    expect(__LINE__,   0, (int)vec->data[0]);
-    expect(__LINE__,  50, (int)vec->data[50]);
-    expect(__LINE__,  99, (int)vec->data[99]);
+    expect(__LINE__,   0, (int)(int64_t)vec->data[0]);
+    expect(__LINE__,  50, (int)(int64_t)vec->data[50]);
+    expect(__LINE__,  99, (int)(int64_t)vec->data[99]);
 
     printf("OK\n");
 }
@@ -53,8 +53,8 @@ void vec_push(Vector *vec, void *elem) {
 Node *new_node(int ty, Node *lhs, Node *rhs) {
     Node *node = malloc(sizeof(Node));
     node->ty = ty;
-    node->lhs = lhs;
-    node->rhs = rhs;
+    node->lhs = (struct Node *)lhs;
+    node->rhs = (struct Node *)rhs;
     return node;
 }
 
@@ -121,8 +121,8 @@ void gen(Node *node) {
         return;
     }
 
-    gen(node->lhs);
-    gen(node->rhs);
+    gen((Node *)node->lhs);
+    gen((Node *)node->rhs);
 
     printf("  pop rdi\n");
     printf("  pop rax\n");
@@ -151,6 +151,14 @@ void tokenize(char *p) {
     while(*p) {
         // 空白文字をスキップ
         if(isspace(*p)) {
+            p++;
+            continue;
+        }
+
+        if('a' <= *p && *p <= 'z') {
+            tokens[i].ty = TK_IDENT;
+            tokens[i].input = p;
+            i++;
             p++;
             continue;
         }
@@ -200,7 +208,7 @@ int main(int argc, char **argv) {
     // "-test"の時は runtestを呼ぶ
     if(!strcmp(argv[1], "-test")) {
         runtest();
-        exit(0);
+        return 0;
     }
 
     // トークナイズしてパースする
