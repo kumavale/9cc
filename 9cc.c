@@ -1,7 +1,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-//#include <string.h>
+#include <string.h>
 #include "9cc.h"
 
 int pos;
@@ -194,6 +194,13 @@ int main(int argc, char **argv) {
     if(argc != 2) {
         fprintf(stderr, "Invalid argument\n");
         return 1;
+    }
+
+    // 仮の引数チェック
+    // "-test"の時は runtestを呼ぶ
+    if(!strcmp(argv[1], "-test")) {
+        runtest();
+        exit(0);
     }
 
     // トークナイズしてパースする
