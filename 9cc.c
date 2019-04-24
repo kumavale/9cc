@@ -83,9 +83,18 @@ Node *new_node(int ty, Node *lhs, Node *rhs) {
 }
 
 Node *new_node_num(int val) {
+    //fprintf(stderr, "__LINE__: %d, val: %d\n", __LINE__, val);
     Node *node = malloc(sizeof(Node));
     node->ty = ND_NUM;
     node->val = val;
+    return node;
+}
+
+Node *new_node_ident(int val) {
+    //fprintf(stderr, "__LINE__: %d, val: %d\n", __LINE__, val);
+    Node *node = malloc(sizeof(Node));
+    node->ty = ND_IDENT;
+    node->name = val;
     return node;
 }
 
@@ -97,6 +106,12 @@ int consume(int ty) {
 }
 
 Node *term() {
+    if(tokens[pos].ty == TK_NUM)
+        return new_node_num(tokens[pos++].val);
+
+    if(tokens[pos].ty == TK_IDENT)
+        return new_node_ident(tokens[pos++].val);
+
     if(consume('(')) {
         Node *node = add();
         if(!consume(')'))
@@ -104,9 +119,6 @@ Node *term() {
                     tokens[pos].input);
         return node;
     }
-
-    if(tokens[pos].ty == TK_NUM)
-        return new_node_num(tokens[pos++].val);
 
     error("A token that is neither a number nor an open parenthesis: %s",
             tokens[pos].input);
@@ -140,8 +152,11 @@ Node *add() {
 
 void gen_lval(Node *node) {
     if(node->ty != ND_IDENT)
-        error("Lvalue of assignment is not a variableo");
-    int offset = ('z' - node->name + 1) * 8;
+        error("Lvalue of assignment is not a variable");
+    //int offset = ('z' - node->name + 1) * 8;
+    int offset = (node->name + 1 - 'a') * 8;
+    //fprintf(stderr, "[%d]", node->name);
+    //fprintf(stderr, "[%d]", offset);
     printf("  mov rax, rbp\n");
     printf("  sub rax, %d\n", offset);
     printf("  push rax\n");
@@ -191,6 +206,7 @@ void gen(Node *node) {
         case '/':
             printf("  mov rdx, 0\n");
             printf("  div rdi\n");
+            break;
     }
 
     printf("  push rax\n");
@@ -218,6 +234,7 @@ void tokenize(char *p) {
         if('a' <= *p && *p <= 'z') {
             tokens[i].ty = TK_IDENT;
             tokens[i].input = p;
+            tokens[i].val = *p;
             i++;
             p++;
             continue;
@@ -270,7 +287,6 @@ int main(int argc, char **argv) {
     // トークナイズしてパースする
     tokenize(argv[1]);
     program();
-    //Node *node = add();
 
     // アセンブリの前半部分を出力
     printf(".intel_syntax noprefix\n");
@@ -279,7 +295,6 @@ int main(int argc, char **argv) {
 
     // プロローグ
     // 変数26個分の領域を確保する
-    //gen(node);
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
     printf("  sub rsp, 208\n"); // 8 * 26
