@@ -49,6 +49,14 @@ Node *stmt() {
         node = malloc(sizeof(Node));
         node->ty = ND_RETURN;
         node->lhs = (struct Node *)assign();
+    } else if(consume(TK_EQUAL)) {
+        node = malloc(sizeof(Node));
+        node->ty = ND_EQUAL;
+        node->lhs = (struct Node *)assign();
+    } else if(consume(TK_NEQUAL)) {
+        node = malloc(sizeof(Node));
+        node->ty = ND_NEQUAL;
+        node->lhs = (struct Node *)assign();
     } else {
         node = assign();
     }
@@ -170,8 +178,6 @@ Node *term() {
 
     error("A token that is neither a number nor an open parenthesis: %s",
             tokens[pos].input);
-
-    return 0;
 }
 
 Node *unary() {
@@ -230,6 +236,26 @@ void gen(Node *node) {
         return;
     }
 
+    if(node->ty == ND_EQUAL) {
+        gen((Node *)node->lhs);
+        printf("  pop rax\n");
+        printf("  pop rdi\n");
+        printf("  cmp rdi, rax\n");
+        printf("  sete al\n");
+        printf("  movzb rax, al\n");
+        return;
+    }
+
+    if(node->ty == ND_NEQUAL) {
+        gen((Node *)node->lhs);
+        printf("  pop rax\n");
+        printf("  pop rdi\n");
+        printf("  cmp rdi, rax\n");
+        printf("  setne al\n");
+        printf("  movzb rax, al\n");
+        return;
+    }
+
     if(node->ty == ND_NUM) {
         printf("  push %d\n", node->val);
         return;
@@ -279,14 +305,6 @@ void gen(Node *node) {
     printf("  push rax\n");
 }
 
-char * _strndup(const char *s, int n) {
-    char *p;
-    p = malloc(sizeof(char *) * n);
-    for(int _i=0; _i<n; _i++)
-        strcpy(p, s);
-    return p;
-}
-
 // エラーを報告するための関数
 void error(char *fmt, ...) {
     va_list ap;
@@ -321,10 +339,17 @@ void tokenize(char *p) {
             }
             tokens[i].ty = TK_IDENT;
             tokens[i].input = p;
-            tokens[i].name = _strndup(p, j);
+            tokens[i].name = strndup(p, j);
             i++;
             p+=j;
-            //free();
+            continue;
+        }
+
+        if((*p == '=' || *p == '!') && (*(p+1) == '=')) {
+            tokens[i].ty = *p == '=' ? TK_EQUAL : TK_NEQUAL;
+            tokens[i].input = p;
+            i++;
+            p+=2;
             continue;
         }
 
