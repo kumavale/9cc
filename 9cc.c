@@ -208,7 +208,7 @@ Token *tokenize() {
         }
 
         // Punctuator
-        if (*p == '+' || *p == '-') {
+        if (strchr("+-*/()", *p)) {
             cur = new_token(TK_RESERVED, cur, p++);
             continue;
         }
@@ -220,7 +220,7 @@ Token *tokenize() {
             continue;
         }
 
-        error_at(p, "expected a number");
+        error_at(p, "invalid token");
     }
 
     new_token(TK_EOF, cur, p);
@@ -230,29 +230,24 @@ Token *tokenize() {
 int main(int argc, char **argv) {
     if (argc != 2) {
         error("%s: invalid number of arguments", argv[0]);
-        return 1;
     }
 
+    // Tokenize and parse.
     user_input = argv[1];
     token = tokenize();
+    Node *node = expr();
 
+    // Print out the first half of assembly.
     printf(".intel_syntax noprefix\n");
     printf(".global main\n");
     printf("main:\n");
 
-    // The first token must be a number
-    printf("  mov rax, %d\n", expect_number());
+    // Traverse the AST to emit assembly.
+    gen(node);
 
-    // ... followed by either '+ <number>' or '- <number>'.
-    while (!at_eof()) {
-        if (consume('+')) {
-            printf("  add rax, %d\n", expect_number());
-            continue;
-        }
-
-        expect('-');
-        printf("  sub rax, %d\n", expect_number());
-    }
+    // A result must be at the top of the stack, so pop it
+    // to RAX to make it a program exit code.
+    printf("  pop rax\n");
 
     printf("  ret\n");
 
