@@ -55,9 +55,18 @@ Node *program(void) {
     code[i] = NULL;
 }
 
-// stmt = expr ";"
+// stmt = return expr ";"
+//      | expr ";"
 static Node *stmt(void) {
-    Node *node = expr();
+    if (consume("return")) {
+        Node *node = new_node(ND_RETURN);
+        node->lhs = expr();
+        expect(";");
+        return node;
+    }
+
+    Node *node = new_node(ND_EXPR_STMT);
+    node->lhs = expr();
     expect(";");
     return node;
 }
