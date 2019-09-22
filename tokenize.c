@@ -93,6 +93,22 @@ static bool is_alnum(char c) {
     return is_alpha(c) || ('0' <= c && c <= '9');
 }
 
+static int is_reserved(char *c) {
+    static char *rw[] = { // Reserved words
+        "return",
+        "if",
+        "else",
+    };
+
+    for (int i = 0; i < sizeof(rw) / sizeof(*rw); ++i) {
+        int len = strlen(rw[i]);
+        if (startswith(c, rw[i]) && !is_alnum(len)) {
+            return len;
+        }
+    }
+    return 0;
+}
+
 // Tokenize `user_input` and returns new tokens.
 Token *tokenize(void) {
     char *p = user_input;
@@ -107,19 +123,10 @@ Token *tokenize(void) {
         }
 
         // Keywords
-        if (startswith(p, "return") && !is_alnum(p[6])) {
-            cur = new_token(TK_RESERVED, cur, p, 6);
-            p += 6;
-            continue;
-        }
-        if (startswith(p, "if") && !is_alnum(p[2])) {
-            cur = new_token(TK_RESERVED, cur, p, 2);
-            p += 2;
-            continue;
-        }
-        if (startswith(p, "else") && !is_alnum(p[4])) {
-            cur = new_token(TK_RESERVED, cur, p, 4);
-            p += 4;
+        if (is_reserved(p)) {
+            int len = is_reserved(p);
+            cur = new_token(TK_RESERVED, cur, p, len);
+            p += len;
             continue;
         }
 
