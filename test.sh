@@ -55,5 +55,10 @@ assert 3 'foo = 3; return foo;'
 assert 8 'foo_123=3; bar=5; return foo_123+bar;'
 assert 1 'f1=-1; f2=2; return f1+f2;'
 
+assert 1 'if(1) return 1; return 0;'
+assert 0 'if(0) return 1; return 0;'
+assert 1 'if(1*2==5-3) return 1; return 0;'
+assert 3 'if(1) if(2) return 3; return 4;'
+
 echo OK
 

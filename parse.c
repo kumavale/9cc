@@ -56,12 +56,21 @@ Node *program(void) {
 }
 
 // stmt = return expr ";"
+//      | "if" "(" expr ")" stmt
 //      | expr ";"
 static Node *stmt(void) {
     if (consume("return")) {
         Node *node = new_node(ND_RETURN);
         node->lhs = expr();
         expect(";");
+        return node;
+    }
+    if (consume("if")) {
+        Node *node = new_node(ND_IF);
+        expect("(");
+        node->lhs = expr();
+        expect(")");
+        node->rhs = stmt();
         return node;
     }
 
