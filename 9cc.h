@@ -42,6 +42,15 @@ extern Token *token;
 // parse.c
 //
 
+// Local variable
+typedef struct LVar LVar;
+struct LVar {
+    LVar *next; // Next variable or NULL
+    char *name; // Variable name
+    int len;    // Name length
+    int offset; // Offset from RBP
+};
+
 typedef enum {
     ND_ADD,    // +
     ND_SUB,    // -

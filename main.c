@@ -11,27 +11,7 @@ int main(int argc, char **argv) {
     Node *node = program();
 
     // Traverse the AST to emit assembly.
-    //codegen(node);
-
-    printf(".intel_syntax noprefix\n");
-    printf(".global main\n");
-    printf("main:\n");
-
-    // Prologue
-    // Allocating 26 variable areas.
-    printf("  push rbp\n");
-    printf("  mov rbp, rsp\n");
-    printf("  sub rsp, 208\n");
-
-    for (int i = 0; code[i]; ++i) {
-        gen(code[i]);
-        printf("  pop rax\n");
-    }
-
-    // Epilogue
-    printf("  mov rsp, rbp\n");
-    printf("  pop rbp\n");
-    printf("  ret\n");
+    codegen(node);
 
     return 0;
 }
