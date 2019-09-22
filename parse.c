@@ -56,7 +56,7 @@ Node *program(void) {
 }
 
 // stmt = return expr ";"
-//      | "if" "(" expr ")" stmt
+//      | "if" "(" expr ")" stmt ("else" stmt)?
 //      | expr ";"
 static Node *stmt(void) {
     if (consume("return")) {
@@ -71,6 +71,10 @@ static Node *stmt(void) {
         node->lhs = expr();
         expect(")");
         node->rhs = stmt();
+
+        if (consume("else")) {
+            node->els = stmt();
+        }
         return node;
     }
 

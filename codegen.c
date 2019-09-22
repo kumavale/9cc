@@ -43,15 +43,24 @@ void gen(Node *node) {
         printf("  pop rbp\n");
         printf("  ret\n");
         return;
-    case ND_IF:
+    case ND_IF: {
+        int seq = labelseq++;
         gen(node->lhs);
         printf("  pop rax\n");
         printf("  cmp rax, 0\n");
-        printf("  je .Lend%d\n", labelseq);
-        gen(node->rhs);
-        printf(".Lend%d:\n", labelseq);
-        ++labelseq;
-        return;
+        if (node->els) {
+            printf("  je .Lelse%d\n", seq);
+            gen(node->rhs);
+            printf("  jmp .Lend%d\n", seq);
+            printf(".Lelse%d:\n", seq);
+            gen(node->els);
+            printf(".Lend%d:\n", seq);
+        } else {
+            printf("  je .Lend%d\n", seq);
+            gen(node->rhs);
+            printf(".Lend%d:\n", seq);
+        }
+        return; }
     }
 
     gen(node->lhs);

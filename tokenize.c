@@ -117,6 +117,11 @@ Token *tokenize(void) {
             p += 2;
             continue;
         }
+        if (startswith(p, "else") && !is_alnum(p[4])) {
+            cur = new_token(TK_RESERVED, cur, p, 4);
+            p += 4;
+            continue;
+        }
 
         // Identifier
         if (is_alpha(*p)) {

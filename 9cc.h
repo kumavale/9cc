@@ -74,6 +74,7 @@ struct Node {
     NodeKind kind; // Node kind
     Node *lhs;     // Left-hand side
     Node *rhs;     // Right-hand side
+    Node *els;     // else
     long val;      // Used if kind == ND_NUM
     int offset;    // Used if kind == ND_LVAR
 };

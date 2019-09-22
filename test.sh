@@ -60,5 +60,9 @@ assert 0 'if(0) return 1; return 0;'
 assert 1 'if(1*2==5-3) return 1; return 0;'
 assert 3 'if(1) if(2) return 3; return 4;'
 
+assert 1 'if(1) return 1; else return 2;'
+assert 2 'if(0) return 1; else if(1) return 2;'
+assert 3 'if(0) return 1; else if(0) return 2; else return 3;'
+
 echo OK
 
