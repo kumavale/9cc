@@ -58,6 +58,7 @@ Node *program(void) {
 // stmt = return expr ";"
 //      | "if" "(" expr ")" stmt ("else" stmt)?
 //      | "while" "(" expr ")" stmt
+//      | "for" "(" expr? ";" expr? ";" expr? ")" stmt
 //      | expr ";"
 static Node *stmt(void) {
     if (consume("return")) {
@@ -83,6 +84,26 @@ static Node *stmt(void) {
         expect("(");
         node->lhs = expr();
         expect(")");
+        node->rhs = stmt();
+        return node;
+    }
+    if (consume("for")) {
+        Node *node = new_node(ND_FOR);
+        expect("(");
+        if (!consume(";")) {
+            node->ini = new_node(ND_EXPR_STMT);
+            node->ini->lhs = expr();
+            expect(";");
+        }
+        if (!consume(";")) {
+            node->lhs = expr();
+            expect(";");
+        }
+        if (!consume(")")) {
+            node->inc = new_node(ND_EXPR_STMT);
+            node->inc->lhs = expr();
+            expect(")");
+        }
         node->rhs = stmt();
         return node;
     }

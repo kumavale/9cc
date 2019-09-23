@@ -64,6 +64,7 @@ typedef enum {
     ND_RETURN,    // "return"
     ND_IF,        // "if"
     ND_WHILE,     // "while"
+    ND_FOR,       // "for"
     ND_EXPR_STMT, // Expression statement
     ND_LVAR,      // Local variable
     ND_NUM,       // Integer
@@ -75,7 +76,9 @@ struct Node {
     NodeKind kind; // Node kind
     Node *lhs;     // Left-hand side
     Node *rhs;     // Right-hand side
-    Node *els;     // else
+    Node *els;     // Else for "if" statement
+    Node *ini;     // Init for "for" statement
+    Node *inc;     // Increment for "for" statement
     long val;      // Used if kind == ND_NUM
     int offset;    // Used if kind == ND_LVAR
 };

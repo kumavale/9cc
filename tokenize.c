@@ -99,6 +99,7 @@ static int is_reserved(char *c) {
         "if",
         "else",
         "while",
+        "for",
     };
 
     for (int i = 0; i < sizeof(rw) / sizeof(*rw); ++i) {
