@@ -56,11 +56,25 @@ Node *program(void) {
 }
 
 // stmt = return expr ";"
+//      | "{" stmt* "}"
 //      | "if" "(" expr ")" stmt ("else" stmt)?
 //      | "while" "(" expr ")" stmt
 //      | "for" "(" expr? ";" expr? ";" expr? ")" stmt
 //      | expr ";"
 static Node *stmt(void) {
+    if (consume("{")) {
+        Node head = {};
+        Node *cur = &head;
+
+        while (!consume("}")) {
+            cur->next = stmt();
+            cur = cur->next;
+        }
+
+        Node *node = new_node(ND_BLOCK);
+        node->body = head.next;
+        return node;
+    }
     if (consume("return")) {
         Node *node = new_node(ND_RETURN);
         node->lhs = expr();

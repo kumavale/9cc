@@ -61,6 +61,7 @@ typedef enum {
     ND_LT,        // <
     ND_LE,        // <=
     ND_ASSIGN,    // =
+    ND_BLOCK,     // "{" and "}"
     ND_RETURN,    // "return"
     ND_IF,        // "if"
     ND_WHILE,     // "while"
@@ -74,11 +75,13 @@ typedef enum {
 typedef struct Node Node;
 struct Node {
     NodeKind kind; // Node kind
+    Node *next;    // Next node
     Node *lhs;     // Left-hand side
     Node *rhs;     // Right-hand side
     Node *els;     // Else for "if" statement
     Node *ini;     // Init for "for" statement
     Node *inc;     // Increment for "for" statement
+    Node *body;    // Body for "{" ... "}"
     long val;      // Used if kind == ND_NUM
     int offset;    // Used if kind == ND_LVAR
 };

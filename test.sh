@@ -66,9 +66,12 @@ assert 3 'if(0) return 1; else if(0) return 2; else return 3;'
 
 assert 4 'i=5; j=0; while(i=i-1) j=j+1; return j;'
 assert 1 'while(0) return 0; return 1;'
+assert 55 'i=0; j=0; while(i<=10) {j=i+j; i=i+1;} return j;'
 
 assert 10 'j=0; for(i=0; i<5; i=i+1) j=j+i; return j;'
 assert 1 'for(;;) return 1; return 0;'
+
+assert 3 '{1; {2;} return 3;}'
 
 echo OK
 
