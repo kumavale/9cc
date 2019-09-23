@@ -49,10 +49,17 @@ Node *code[100];
 Node *program(void) {
     int i = 0;
     locals = NULL;
+
     while (!at_eof()) {
         code[i++] = stmt();
     }
     code[i] = NULL;
+}
+
+static Node *read_expr_stmt(void) {
+    Node *node = new_node(ND_EXPR_STMT);
+    node->lhs = expr();
+    return node;
 }
 
 // stmt = return expr ";"
@@ -84,9 +91,9 @@ static Node *stmt(void) {
     if (consume("if")) {
         Node *node = new_node(ND_IF);
         expect("(");
-        node->lhs = expr();
+        node->cond = expr();
         expect(")");
-        node->rhs = stmt();
+        node->then = stmt();
 
         if (consume("else")) {
             node->els = stmt();
@@ -96,29 +103,27 @@ static Node *stmt(void) {
     if (consume("while")) {
         Node *node = new_node(ND_WHILE);
         expect("(");
-        node->lhs = expr();
+        node->cond = expr();
         expect(")");
-        node->rhs = stmt();
+        node->then = stmt();
         return node;
     }
     if (consume("for")) {
         Node *node = new_node(ND_FOR);
         expect("(");
         if (!consume(";")) {
-            node->ini = new_node(ND_EXPR_STMT);
-            node->ini->lhs = expr();
+            node->init = read_expr_stmt();
             expect(";");
         }
         if (!consume(";")) {
-            node->lhs = expr();
+            node->cond = expr();
             expect(";");
         }
         if (!consume(")")) {
-            node->inc = new_node(ND_EXPR_STMT);
-            node->inc->lhs = expr();
+            node->inc = read_expr_stmt();
             expect(")");
         }
-        node->rhs = stmt();
+        node->then = stmt();
         return node;
     }
 

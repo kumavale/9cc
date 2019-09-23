@@ -76,12 +76,20 @@ typedef struct Node Node;
 struct Node {
     NodeKind kind; // Node kind
     Node *next;    // Next node
+
     Node *lhs;     // Left-hand side
     Node *rhs;     // Right-hand side
-    Node *els;     // Else for "if" statement
-    Node *ini;     // Init for "for" statement
-    Node *inc;     // Increment for "for" statement
-    Node *body;    // Body for "{" ... "}"
+
+    // "if", "while" or "for" statement
+    Node *cond;
+    Node *then;
+    Node *els;
+    Node *init;
+    Node *inc;
+
+    // Block for "{" ... "}"
+    Node *body;
+
     long val;      // Used if kind == ND_NUM
     int offset;    // Used if kind == ND_LVAR
 };
@@ -93,6 +101,5 @@ extern Node *code[100];
 // codegen.c
 //
 
-void gen(Node *node);
 void codegen(Node *node);
 
