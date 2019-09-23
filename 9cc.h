@@ -63,6 +63,7 @@ typedef enum {
     ND_ASSIGN,    // =
     ND_RETURN,    // "return"
     ND_IF,        // "if"
+    ND_WHILE,     // "while"
     ND_EXPR_STMT, // Expression statement
     ND_LVAR,      // Local variable
     ND_NUM,       // Integer
