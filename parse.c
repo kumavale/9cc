@@ -33,6 +33,20 @@ static LVar *find_lvar(Token *tok) {
     return NULL;
 }
 
+static char *strndup(const char *s, size_t n) {
+    int len = 0;
+    const char *p = s;
+    for (; *p && len++ < n; ++p);
+
+    char *new = (char *) malloc(len--);
+    if (new == NULL) {
+        error("Failed: malloc()");
+        return NULL;
+    }
+    new[len] = '\0';
+    return memcpy(new, s, len);
+}
+
 static Node *stmt(void);
 static Node *expr(void);
 static Node *assign(void);
@@ -222,7 +236,8 @@ static Node *unary(void) {
     return primary();
 }
 
-// primary = "(" expr ")" | num
+// primary = "(" expr ")" | ident args? | num
+// args    = "(" ")"
 static Node *primary(void) {
     if (consume("(")) {
         Node *node = expr();
@@ -232,9 +247,17 @@ static Node *primary(void) {
 
     Token *tok = consume_ident();
     if (tok) {
+        // Function call
+        if (consume("(")) {
+            expect(")");
+            Node *node = new_node(ND_FUNCALL);
+            node->funcname = strndup(tok->str, tok->len);
+            return node;
+        }
         Node *node = calloc(1, sizeof(Node));
         node->kind = ND_LVAR;
 
+        // Variable
         LVar *lvar = find_lvar(tok);
         if (lvar) {
             node->offset = lvar->offset;

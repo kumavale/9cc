@@ -66,6 +66,7 @@ typedef enum {
     ND_IF,        // "if"
     ND_WHILE,     // "while"
     ND_FOR,       // "for"
+    ND_FUNCALL,   // Function call
     ND_EXPR_STMT, // Expression statement
     ND_LVAR,      // Local variable
     ND_NUM,       // Integer
@@ -89,6 +90,9 @@ struct Node {
 
     // Block for "{" ... "}"
     Node *body;
+
+    // Function call
+    char *funcname;
 
     long val;      // Used if kind == ND_NUM
     int offset;    // Used if kind == ND_LVAR
